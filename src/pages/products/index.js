@@ -1,25 +1,35 @@
 import React from 'react';
 import { graphql } from 'gatsby';
-import { StaticImage } from 'gatsby-plugin-image';
+import Layout from '../../components/Layout';
+import { Grid } from '@material-ui/core';
+import ProductCard from '../../components/ProductCard';
 
 const ProductPage = ({ data }) => {
-  const products = data.allShopifyProduct.nodes.map((prod) => {
+
+  const products = data.allShopifyProduct.edges.map((prod) => {
     return (
-      <div key={prod.handle}>
-        <StaticImage src={prod.featuredImage.src} alt={prod.title}/>
-        <h2>{prod.title}</h2>
-        <p>{prod.description}</p>
-      </div>
+      <Grid item xs={5} key={prod.node.handle}>
+        <ProductCard
+          image={
+            prod.node.featuredImage.localFile.childImageSharp.gatsbyImageData
+          }
+          alt={prod.node.title}
+          title={prod.node.title}
+          price={prod.node.priceRangeV2.maxVariantPrice.amount}
+          currency={prod.node.priceRangeV2.maxVariantPrice.currencyCode}
+          handle={prod.node.handle}
+        />
+      </Grid>
     );
   });
 
-  console.log(data.allShopifyProduct.nodes[0]);
-
   return (
-    <div>
+    <Layout>
       <h1>Product Page</h1>
-      {products}
-    </div>
+      <Grid spacing={2} container justifyContent="center" alignContent="center">
+        {products}
+      </Grid>
+    </Layout>
   );
 };
 
@@ -30,20 +40,25 @@ export const Head = () => <title>Product Page</title>;
 export const query = graphql`
   {
     allShopifyProduct {
-      nodes {
-        title
-        handle
-        variants {
-          shopifyId
-        }
-        priceRangeV2 {
-          maxVariantPrice {
-            amount
+      edges {
+        node {
+          title
+          handle
+          priceRangeV2 {
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
           }
-        }
-        description
-        featuredImage {
-          src
+          featuredImage {
+            altText
+            src
+            localFile {
+              childImageSharp {
+                gatsbyImageData(height: 400)
+              }
+            }
+          }
         }
       }
     }
