@@ -1,43 +1,53 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'gatsby';
-import { AppBar, Box, Typography, makeStyles } from '@material-ui/core';
+import { AppBar, Box, Typography, Badge, makeStyles } from '@material-ui/core';
+import ShoppingCart from '@material-ui/icons/ShoppingCart';
+import { CartContext } from '../context/CartContext';
 
 const useStyles = makeStyles((theme) => ({
   navigation: {
+    padding: '0 2rem',
     display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: '.5rem'
+    justifyContent: 'space-around',
+    height: '6vh',
+    backgroundColor: 'black',
   },
   link: {
     textDecoration: 'none',
-    margin: '0 1rem',
+    margin: '0 1.2rem',
     color: 'white',
-    "&:hover": {
-      color: 'silver'
-    }
+    '&:hover': {
+      color: 'silver',
+    },
   },
-  active: {
-    color: '#37E2D5'
-  }
 }));
 
 const Nav = () => {
+  const cartContext = useContext(CartContext);
   const styles = useStyles();
 
   return (
-    <AppBar color='primary'>
+    <AppBar className={styles.navigation}>
       <Box className={styles.navigation}>
         <Link to="/" className={styles.link}>
-          <Typography>HOME</Typography>
+          <Typography variant="h4" color="primary">
+            Tech Shop
+          </Typography>
         </Link>
         <Link to="/products" className={styles.link}>
-          <Typography>PRODUCTS</Typography>
+          <Typography>Products</Typography>
         </Link>
         <Link to="/blog" className={styles.link}>
-          <Typography>BLOG</Typography>
+          <Typography>My Blog</Typography>
         </Link>
       </Box>
+      <Link to="/checkout" className={styles.link}>
+        <Badge badgeContent={cartContext.totalQuantity} color="primary" overlap="circular">
+          <ShoppingCart fontSize="large" />
+        </Badge>
+      </Link>
     </AppBar>
   );
 };

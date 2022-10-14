@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { graphql } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import Layout from '../../components/Layout';
+import { CartContext } from '../../context/CartContext';
 import {
   makeStyles,
   Box,
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: '0 2rem',
+    margin: '5rem 2rem',
   },
   details: {
     display: 'flex',
@@ -27,11 +28,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Product = ({ pageContext, data }) => {
+const Product = ({ data }) => {
   const { shopifyProduct } = data;
+  const cartContext = useContext(CartContext);
   const styles = useStyles();
-  console.log(pageContext.handle);
-  console.log(shopifyProduct);
+
+  const addProductHandler = () => {
+    // const product = {
+    //   id: props.handle,
+    //   name: props.title,
+    //   price: props.price,
+    //   quantity: 1,
+    //   totalPrice: props.price,
+    //   image: props.image,
+    // };
+    // cartContext.addProduct(product)
+  };
 
   return (
     <Layout>
@@ -49,7 +61,7 @@ const Product = ({ pageContext, data }) => {
           <Typography>
             Price:{' '}
             {shopifyProduct.priceRangeV2.maxVariantPrice.amount.toLocaleString(
-              'en-US'
+              'sr-RS'
             )}{' '}
             {shopifyProduct.priceRangeV2.maxVariantPrice.currencyCode}
           </Typography>
@@ -60,7 +72,11 @@ const Product = ({ pageContext, data }) => {
             type="number"
             defaultValue={1}
           />
-          <Button variant="contained" color="primary">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={addProductHandler}
+          >
             Add to cart
           </Button>
         </Box>

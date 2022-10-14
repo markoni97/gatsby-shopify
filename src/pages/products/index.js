@@ -1,7 +1,7 @@
 import React from 'react';
 import { graphql } from 'gatsby';
 import Layout from '../../components/Layout';
-import { Grid } from '@material-ui/core';
+import { Grid, Typography } from '@material-ui/core';
 import ProductCard from '../../components/ProductCard';
 
 const ProductPage = ({ data }) => {
@@ -25,7 +25,7 @@ const ProductPage = ({ data }) => {
 
   return (
     <Layout>
-      <h1>Product Page</h1>
+      <Typography variant='h4' component='h2'>Our products</Typography>
       <Grid spacing={2} container justifyContent="center" alignContent="center">
         {products}
       </Grid>
@@ -35,7 +35,7 @@ const ProductPage = ({ data }) => {
 
 export default ProductPage;
 
-export const Head = () => <title>Product Page</title>;
+export const Head = () => <title>Products</title>;
 
 export const query = graphql`
   {
