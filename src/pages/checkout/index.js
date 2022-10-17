@@ -16,23 +16,127 @@ import {
 
 const useStyles = makeStyles((theme) => ({
   table: {
-    marginTop: '5rem'
+    marginTop: '5rem',
   },
   image: {
     height: '8rem',
     width: '8rem',
   },
   purchaseBtn: {
-    margin: '3rem 0'
-  }
+    margin: '3rem 0',
+  },
 }));
+
+//Product {id, name, price, quantity, totalPrice, image}
 
 const Cart = () => {
   const cartContext = useContext(CartContext);
   const styles = useStyles();
 
-  const cartPurchaseHandler = () => {
-    console.log(cartContext.products);
+  const lineItems = cartContext.products.map((prod) => {
+    return {
+      originalUnitPrice: prod.price,
+      quantity: prod.quantity,
+      requiresShipping: true,
+      sku: prod.sku, //'iphs22'
+      taxable: true,
+      title: prod.name,
+      variantId: prod.id, //'gid://shopify/ProductVariant/43406941683947'
+      weight: {
+        unit: 'GRAMS',
+        value: 1.1,
+      },
+    };
+  });
+
+  const cartPurchaseHandler = async () => {
+    const response = await fetch(
+      'https://039128.myshopify.com/admin/api/2022-10/graphql.json',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Access-Token':
+            process.env.GATSBY_SHOPIFY_ADMIN_ACCESS_TOKEN,
+        },
+        body: JSON.stringify({
+          query: `mutation draftOrderCreate($input: DraftOrderInput!){
+            draftOrderCreate(input: $input) {
+              draftOrder {
+                lineItems(first: 10) {
+                  edges {
+                    node {
+                      product {
+                        title
+                      }
+                    }
+                  }
+                }
+              }
+              userErrors {
+                field
+                message
+              }
+            }
+          }`,
+          variables: {
+            input: {
+              email: 'marko.radenkovic@vegait.rs',
+              lineItems: [
+                {
+                  originalUnitPrice: '1120',
+                  quantity: 1,
+                  requiresShipping: true,
+                  sku: 'iphs22',
+                  taxable: true,
+                  title: 'Iphone 13 Pro',
+                  variantId: 'gid://shopify/ProductVariant/43406941683947',
+                  weight: {
+                    unit: 'GRAMS',
+                    value: 1.1,
+                  },
+                },
+              ],
+              localizationExtensions: [
+                {
+                  key: 'TAX_CREDENTIAL_BR',
+                  value: '',
+                },
+              ],
+              marketRegionCountryCode: 'AT',
+              note: '',
+              phone: '+431234567890',
+              presentmentCurrencyCode: 'EUR',
+              purchasingEntity: {
+                customerId: 'gid://shopify/Customer/6431312806123',
+              },
+              shippingAddress: {
+                address1: 'Kasernstraße',
+                address2: '',
+                city: 'Graz',
+                company: '',
+                countryCode: 'AT',
+                firstName: 'Marko',
+                lastName: 'Radenkovic',
+                phone: '+381654284106',
+                provinceCode: '',
+                zip: '8010',
+              },
+              shippingLine: {
+                price: '35',
+                shippingRateHandle: '',
+                title: 'FedEx',
+              },
+              taxExempt: true,
+              useCustomerDefaultAddress: true,
+              visibleToCustomer: true,
+            },
+          },
+        }),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
   };
 
   const products = cartContext.products.map((prod) => {
@@ -79,7 +183,12 @@ const Cart = () => {
           <TableBody>{products}</TableBody>
         </Table>
       </TableContainer>
-      <Button variant="contained" color="primary" className={styles.purchaseBtn} onClick={cartPurchaseHandler}>
+      <Button
+        variant="contained"
+        color="primary"
+        className={styles.purchaseBtn}
+        onClick={cartPurchaseHandler}
+      >
         Purchase
       </Button>
     </Layout>

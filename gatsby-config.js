@@ -1,4 +1,6 @@
-require('dotenv').config();
+require('dotenv').config({
+  path: '.env'
+});
 
 module.exports = {
   siteMetadata: {
@@ -8,8 +10,8 @@ module.exports = {
     {
       resolve: 'gatsby-source-shopify',
       options: {
-        password: process.env.SHOPIFY_ADMIN_ACCESS_TOKEN,
-        storeUrl: process.env.SHOPIFY_STORE_URL,
+        password: process.env.GATSBY_SHOPIFY_ADMIN_ACCESS_TOKEN,
+        storeUrl: process.env.GATSBY_SHOPIFY_STORE_URL,
         downloadImages: true,
       },
     },

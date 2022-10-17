@@ -9,6 +9,7 @@ import {
   Typography,
   TextField,
   Button,
+  MenuItem,
 } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,11 +32,20 @@ const useStyles = makeStyles((theme) => ({
 const Product = ({ data }) => {
   const { shopifyProduct } = data;
   const [amount, setAmount] = useState(1);
+  const [variant, setVariant] = useState(shopifyProduct.variants[0].title);
+  const [variantId, setVariantId] = useState();
+  const [variantSku, setVariantSku] = useState();
   const cartContext = useContext(CartContext);
   const styles = useStyles();
 
+  console.log(shopifyProduct);
+
   const changeAmountHandler = (e) => {
     setAmount(parseInt(e.target.value));
+  };
+
+  const changeVariantHandler = (e) => {
+    setVariant(e.target.value);
   };
 
   const addProductHandler = () => {
@@ -43,13 +53,14 @@ const Product = ({ data }) => {
       shopifyProduct.priceRangeV2.maxVariantPrice.amount * amount;
 
     const product = {
-      id: shopifyProduct.handle,
+      id: variantId,
       name: shopifyProduct.title,
       price: shopifyProduct.priceRangeV2.maxVariantPrice.amount,
       quantity: amount,
       totalPrice: totalPrice,
       image:
         shopifyProduct.featuredImage.localFile.childImageSharp.gatsbyImageData,
+      sku: variantSku
     };
     cartContext.addProduct(product);
   };
@@ -82,6 +93,23 @@ const Product = ({ data }) => {
             value={amount}
             onChange={changeAmountHandler}
           />
+          {shopifyProduct.variants.length > 1 && (
+            <TextField
+              select
+              id="variant"
+              label="Variant"
+              type="text"
+              value={variant}
+              helperText="Please select a product variant"
+              onChange={changeVariantHandler}
+            >
+              {shopifyProduct.variants.map((variant) => (
+                <MenuItem key={variant.sku} value={variant.title}>
+                  {variant.title}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
           <Button
             variant="contained"
             color="primary"
@@ -112,6 +140,8 @@ export const query = graphql`
         shopifyId
         price
         availableForSale
+        sku
+        title
       }
       featuredImage {
         altText
