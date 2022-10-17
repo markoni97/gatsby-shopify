@@ -10,5 +10,4 @@ const Blog = () => {
 };
 
 export const Head = () => <title>Blogs</title>;
-
 export default Blog;

@@ -4,6 +4,7 @@ import { CartContext } from '../../context/CartContext';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import {
   Button,
+  makeStyles,
   Paper,
   Table,
   TableBody,
@@ -13,9 +14,26 @@ import {
   TableRow,
 } from '@material-ui/core';
 
+const useStyles = makeStyles((theme) => ({
+  table: {
+    marginTop: '5rem'
+  },
+  image: {
+    height: '8rem',
+    width: '8rem',
+  },
+  purchaseBtn: {
+    margin: '3rem 0'
+  }
+}));
+
 const Cart = () => {
   const cartContext = useContext(CartContext);
-  console.log(cartContext.products);
+  const styles = useStyles();
+
+  const cartPurchaseHandler = () => {
+    console.log(cartContext.products);
+  };
 
   const products = cartContext.products.map((prod) => {
     return (
@@ -30,9 +48,13 @@ const Cart = () => {
           </Button>
         </TableCell>
         <TableCell>
-          <GatsbyImage image={prod.image} alt="Product image" />
+          <GatsbyImage
+            className={styles.image}
+            image={prod.image}
+            alt="Product image"
+          />
         </TableCell>
-        <TableCell>{prod.title}</TableCell>
+        <TableCell>{prod.name}</TableCell>
         <TableCell>{prod.price}$</TableCell>
         <TableCell>{prod.quantity}</TableCell>
         <TableCell>{prod.totalPrice}$</TableCell>
@@ -42,7 +64,7 @@ const Cart = () => {
 
   return (
     <Layout>
-      <TableContainer component={Paper}>
+      <TableContainer className={styles.table} component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -57,10 +79,12 @@ const Cart = () => {
           <TableBody>{products}</TableBody>
         </Table>
       </TableContainer>
+      <Button variant="contained" color="primary" className={styles.purchaseBtn} onClick={cartPurchaseHandler}>
+        Purchase
+      </Button>
     </Layout>
   );
 };
 
 export default Cart;
-
 export const Head = () => <title>Cart</title>;

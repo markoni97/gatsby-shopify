@@ -1,10 +1,17 @@
 import React from 'react';
 import { graphql } from 'gatsby';
 import Layout from '../../components/Layout';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid, makeStyles, Typography } from '@material-ui/core';
 import ProductCard from '../../components/ProductCard';
 
+const useStyles = makeStyles((theme) => ({
+  header: {
+    margin: '2rem 0',
+  },
+}));
+
 const ProductPage = ({ data }) => {
+  const styles = useStyles();
 
   const products = data.allShopifyProduct.edges.map((prod) => {
     return (
@@ -25,7 +32,9 @@ const ProductPage = ({ data }) => {
 
   return (
     <Layout>
-      <Typography variant='h4' component='h2'>Our products</Typography>
+      <Typography variant="h4" component="h2" className={styles.header}>
+        Our products
+      </Typography>
       <Grid spacing={2} container justifyContent="center" alignContent="center">
         {products}
       </Grid>

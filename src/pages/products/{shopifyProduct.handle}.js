@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { graphql } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import Layout from '../../components/Layout';
@@ -30,19 +30,28 @@ const useStyles = makeStyles((theme) => ({
 
 const Product = ({ data }) => {
   const { shopifyProduct } = data;
+  const [amount, setAmount] = useState(1);
   const cartContext = useContext(CartContext);
   const styles = useStyles();
 
+  const changeAmountHandler = (e) => {
+    setAmount(parseInt(e.target.value));
+  };
+
   const addProductHandler = () => {
-    // const product = {
-    //   id: props.handle,
-    //   name: props.title,
-    //   price: props.price,
-    //   quantity: 1,
-    //   totalPrice: props.price,
-    //   image: props.image,
-    // };
-    // cartContext.addProduct(product)
+    const totalPrice =
+      shopifyProduct.priceRangeV2.maxVariantPrice.amount * amount;
+
+    const product = {
+      id: shopifyProduct.handle,
+      name: shopifyProduct.title,
+      price: shopifyProduct.priceRangeV2.maxVariantPrice.amount,
+      quantity: amount,
+      totalPrice: totalPrice,
+      image:
+        shopifyProduct.featuredImage.localFile.childImageSharp.gatsbyImageData,
+    };
+    cartContext.addProduct(product);
   };
 
   return (
@@ -70,7 +79,8 @@ const Product = ({ data }) => {
             id="amount"
             label="amount"
             type="number"
-            defaultValue={1}
+            value={amount}
+            onChange={changeAmountHandler}
           />
           <Button
             variant="contained"
@@ -90,6 +100,7 @@ export const query = graphql`
     shopifyProduct(handle: { eq: $handle }) {
       title
       description
+      handle
       totalInventory
       priceRangeV2 {
         maxVariantPrice {
@@ -115,3 +126,4 @@ export const query = graphql`
 `;
 
 export default Product;
+export const Head = ({ data }) => <title>{data.shopifyProduct.title}</title>;

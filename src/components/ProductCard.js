@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
 const ProductCard = (props) => {
   const cartContext = useContext(CartContext);
   const styles = useStyles();
-  console.log(cartContext.products);
 
   const addProductHandler = () => {
     const product = {
