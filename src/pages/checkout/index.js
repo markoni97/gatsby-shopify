@@ -38,10 +38,10 @@ const Cart = () => {
       originalUnitPrice: prod.price,
       quantity: prod.quantity,
       requiresShipping: true,
-      sku: prod.sku, //'iphs22'
+      sku: prod.sku,
       taxable: true,
       title: prod.name,
-      variantId: prod.id, //'gid://shopify/ProductVariant/43406941683947'
+      variantId: prod.id,
       weight: {
         unit: 'GRAMS',
         value: 1.1,
@@ -82,21 +82,7 @@ const Cart = () => {
           variables: {
             input: {
               email: 'marko.radenkovic@vegait.rs',
-              lineItems: [
-                {
-                  originalUnitPrice: '1120',
-                  quantity: 1,
-                  requiresShipping: true,
-                  sku: 'iphs22',
-                  taxable: true,
-                  title: 'Iphone 13 Pro',
-                  variantId: 'gid://shopify/ProductVariant/43406941683947',
-                  weight: {
-                    unit: 'GRAMS',
-                    value: 1.1,
-                  },
-                },
-              ],
+              lineItems: lineItems,
               localizationExtensions: [
                 {
                   key: 'TAX_CREDENTIAL_BR',
@@ -136,7 +122,6 @@ const Cart = () => {
       }
     );
     const data = await response.json();
-    console.log(data);
   };
 
   const products = cartContext.products.map((prod) => {
@@ -158,7 +143,9 @@ const Cart = () => {
             alt="Product image"
           />
         </TableCell>
-        <TableCell>{prod.name}</TableCell>
+        <TableCell>
+          {prod.name} | {prod.variant}
+        </TableCell>
         <TableCell>{prod.price}$</TableCell>
         <TableCell>{prod.quantity}</TableCell>
         <TableCell>{prod.totalPrice}$</TableCell>

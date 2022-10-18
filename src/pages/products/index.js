@@ -25,6 +25,9 @@ const ProductPage = ({ data }) => {
           price={prod.node.priceRangeV2.maxVariantPrice.amount}
           currency={prod.node.priceRangeV2.maxVariantPrice.currencyCode}
           handle={prod.node.handle}
+          sku={prod.node.variants[0].sku}
+          id={prod.node.variants[0].shopifyId}
+          variant={prod.node.variants[0].title}
         />
       </Grid>
     );
@@ -43,7 +46,6 @@ const ProductPage = ({ data }) => {
 };
 
 export default ProductPage;
-
 export const Head = () => <title>Products</title>;
 
 export const query = graphql`
@@ -58,6 +60,11 @@ export const query = graphql`
               amount
               currencyCode
             }
+          }
+          variants {
+            shopifyId
+            sku
+            title
           }
           featuredImage {
             altText

@@ -34,12 +34,14 @@ const ProductCard = (props) => {
 
   const addProductHandler = () => {
     const product = {
-      id: props.handle,
+      id: props.id,
       name: props.title,
+      variant: props.variant,
       price: props.price,
       quantity: 1,
       totalPrice: props.price,
       image: props.image,
+      sku: props.sku,
     };
     cartContext.addProduct(product);
   };

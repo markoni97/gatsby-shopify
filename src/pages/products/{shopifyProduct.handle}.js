@@ -33,12 +33,16 @@ const Product = ({ data }) => {
   const { shopifyProduct } = data;
   const [amount, setAmount] = useState(1);
   const [variant, setVariant] = useState(shopifyProduct.variants[0].title);
-  const [variantId, setVariantId] = useState();
-  const [variantSku, setVariantSku] = useState();
+  const [variantId, setVariantId] = useState(
+    shopifyProduct.variants[0].shopifyId
+  );
+  const [variantSku, setVariantSku] = useState(shopifyProduct.variants[0].sku);
   const cartContext = useContext(CartContext);
   const styles = useStyles();
 
-  console.log(shopifyProduct);
+  const findVariant = (variant) => {
+    return shopifyProduct.variants.find((prod) => prod.title === variant);
+  };
 
   const changeAmountHandler = (e) => {
     setAmount(parseInt(e.target.value));
@@ -46,6 +50,9 @@ const Product = ({ data }) => {
 
   const changeVariantHandler = (e) => {
     setVariant(e.target.value);
+    const prod = findVariant(e.target.value);
+    setVariantId(prod.shopifyId);
+    setVariantSku(prod.sku);
   };
 
   const addProductHandler = () => {
@@ -55,12 +62,13 @@ const Product = ({ data }) => {
     const product = {
       id: variantId,
       name: shopifyProduct.title,
+      variant: variant,
       price: shopifyProduct.priceRangeV2.maxVariantPrice.amount,
       quantity: amount,
       totalPrice: totalPrice,
       image:
         shopifyProduct.featuredImage.localFile.childImageSharp.gatsbyImageData,
-      sku: variantSku
+      sku: variantSku,
     };
     cartContext.addProduct(product);
   };
