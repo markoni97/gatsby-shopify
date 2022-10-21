@@ -3,14 +3,8 @@ import { graphql } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import Layout from '../../components/Layout';
 import { CartContext } from '../../context/CartContext';
-import {
-  makeStyles,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  MenuItem,
-} from '@material-ui/core';
+import { makeStyles, Box } from '@material-ui/core';
+import ProductDetails from '../../components/product/ProductDetails';
 
 const useStyles = makeStyles((theme) => ({
   product: {
@@ -18,14 +12,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     margin: '5rem 2rem',
-  },
-  details: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    gap: '1.2rem',
-    marginLeft: '2rem',
   },
 }));
 
@@ -70,6 +56,7 @@ const Product = ({ data }) => {
         shopifyProduct.featuredImage.localFile.childImageSharp.gatsbyImageData,
       sku: variantSku,
     };
+    console.log(product);
     cartContext.addProduct(product);
   };
 
@@ -83,53 +70,21 @@ const Product = ({ data }) => {
           }
           alt={shopifyProduct.featuredImage.altText}
         />
-        <Box className={styles.details}>
-          <Typography>{shopifyProduct.title}</Typography>
-          <Typography>{shopifyProduct.description}</Typography>
-          <Typography>
-            Price:{' '}
-            {shopifyProduct.priceRangeV2.maxVariantPrice.amount.toLocaleString(
-              'sr-RS'
-            )}{' '}
-            {shopifyProduct.priceRangeV2.maxVariantPrice.currencyCode}
-          </Typography>
-          <TextField
-            variant="filled"
-            id="amount"
-            label="amount"
-            type="number"
-            value={amount}
-            onChange={changeAmountHandler}
-          />
-          {shopifyProduct.variants.length > 1 && (
-            <TextField
-              select
-              id="variant"
-              label="Variant"
-              type="text"
-              value={variant}
-              helperText="Please select a product variant"
-              onChange={changeVariantHandler}
-            >
-              {shopifyProduct.variants.map((variant) => (
-                <MenuItem key={variant.sku} value={variant.title}>
-                  {variant.title}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={addProductHandler}
-          >
-            Add to cart
-          </Button>
-        </Box>
+        <ProductDetails
+          shopifyProduct={shopifyProduct}
+          addProduct={addProductHandler}
+          changeVariant={changeVariantHandler}
+          changeAmount={changeAmountHandler}
+          amount={amount}
+          variant={variant}
+        />
       </Box>
     </Layout>
   );
 };
+
+export default Product;
+export const Head = ({ data }) => <title>{data.shopifyProduct.title}</title>;
 
 export const query = graphql`
   query ($handle: String) {
@@ -162,6 +117,3 @@ export const query = graphql`
     }
   }
 `;
-
-export default Product;
-export const Head = ({ data }) => <title>{data.shopifyProduct.title}</title>;

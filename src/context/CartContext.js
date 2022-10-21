@@ -9,7 +9,6 @@ export const CartContext = createContext({
 });
 
 //Product {id, name, price, quantity, totalPrice, image, sku}
-
 const CartProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);

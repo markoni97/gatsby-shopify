@@ -59,5 +59,4 @@ const IndexPage = () => {
 };
 
 export default IndexPage;
-
 export const Head = () => <title>My Store</title>;

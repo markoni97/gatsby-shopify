@@ -2,7 +2,7 @@ import React from 'react';
 import { graphql } from 'gatsby';
 import Layout from '../../components/Layout';
 import { Grid, makeStyles, Typography } from '@material-ui/core';
-import ProductCard from '../../components/ProductCard';
+import ProductCard from '../../components/product/ProductCard';
 
 const useStyles = makeStyles((theme) => ({
   header: {

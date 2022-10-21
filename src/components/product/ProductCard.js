@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import AddShoppingCart from '@material-ui/icons/AddShoppingCart';
-import { CartContext } from '../context/CartContext';
+import { CartContext } from '../../context/CartContext';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -21,10 +21,10 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
   },
   imgContainer: {
-    maxHeight: '400px',
+    marginBottom: '1.5rem'
   },
   img: {
-    objectFit: 'contain',
+    objectFit: 'contain !important',
   },
 }));
 
@@ -53,8 +53,8 @@ const ProductCard = (props) => {
         onClick={() => navigate(`${props.handle}`)}
       >
         <GatsbyImage
-          className={styles.imgContainer}
-          imgStyle={styles.img}
+        className={styles.imgContainer}
+          imgClassName={styles.img}
           image={props.image}
           alt={props.alt}
         />

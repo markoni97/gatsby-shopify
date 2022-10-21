@@ -1,36 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Layout from '../../components/Layout';
 import { CartContext } from '../../context/CartContext';
-import { GatsbyImage } from 'gatsby-plugin-image';
-import {
-  Button,
-  makeStyles,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@material-ui/core';
+import { Button, Snackbar, makeStyles } from '@material-ui/core';
+import CheckoutTableRow from '../../components/table/CheckoutTableRow';
+import CheckoutTable from '../../components/table/CheckoutTable';
+import { createOrder } from '../../util/FetchRequests';
 
 const useStyles = makeStyles((theme) => ({
-  table: {
-    marginTop: '5rem',
-  },
-  image: {
-    height: '8rem',
-    width: '8rem',
-  },
   purchaseBtn: {
     margin: '3rem 0',
   },
 }));
 
-//Product {id, name, price, quantity, totalPrice, image}
-
 const Cart = () => {
   const cartContext = useContext(CartContext);
+  const [submitting, setSubmiting] = useState({ message: '', open: false }); //success, error
   const styles = useStyles();
 
   const lineItems = cartContext.products.map((prod) => {
@@ -50,126 +34,51 @@ const Cart = () => {
   });
 
   const cartPurchaseHandler = async () => {
-    const response = await fetch(
-      'https://039128.myshopify.com/admin/api/2022-10/graphql.json',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token':
-            process.env.GATSBY_SHOPIFY_ADMIN_ACCESS_TOKEN,
-        },
-        body: JSON.stringify({
-          query: `mutation draftOrderCreate($input: DraftOrderInput!){
-            draftOrderCreate(input: $input) {
-              draftOrder {
-                lineItems(first: 10) {
-                  edges {
-                    node {
-                      product {
-                        title
-                      }
-                    }
-                  }
-                }
-              }
-              userErrors {
-                field
-                message
-              }
-            }
-          }`,
-          variables: {
-            input: {
-              email: 'marko.radenkovic@vegait.rs',
-              lineItems: lineItems,
-              localizationExtensions: [
-                {
-                  key: 'TAX_CREDENTIAL_BR',
-                  value: '',
-                },
-              ],
-              marketRegionCountryCode: 'AT',
-              note: '',
-              phone: '+431234567890',
-              presentmentCurrencyCode: 'EUR',
-              purchasingEntity: {
-                customerId: 'gid://shopify/Customer/6431312806123',
-              },
-              shippingAddress: {
-                address1: 'Kasernstraße',
-                address2: '',
-                city: 'Graz',
-                company: '',
-                countryCode: 'AT',
-                firstName: 'Marko',
-                lastName: 'Radenkovic',
-                phone: '+381654284106',
-                provinceCode: '',
-                zip: '8010',
-              },
-              shippingLine: {
-                price: '35',
-                shippingRateHandle: '',
-                title: 'FedEx',
-              },
-              taxExempt: true,
-              useCustomerDefaultAddress: true,
-              visibleToCustomer: true,
-            },
-          },
-        }),
-      }
-    );
+    const response = await createOrder(lineItems);
+    if (!response.ok) {
+      setSubmiting({ message: 'Failed to make an order!', open: true });
+      return;
+    }
     const data = await response.json();
+    setSubmiting({ message: 'Successfully made an order!', open: true });
+    console.log(data);
   };
 
   const products = cartContext.products.map((prod) => {
     return (
-      <TableRow key={prod.id}>
-        <TableCell>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => cartContext.removeProduct(prod.id)}
-          >
-            Remove
-          </Button>
-        </TableCell>
-        <TableCell>
-          <GatsbyImage
-            className={styles.image}
-            image={prod.image}
-            alt="Product image"
-          />
-        </TableCell>
-        <TableCell>
-          {prod.name} | {prod.variant}
-        </TableCell>
-        <TableCell>{prod.price}$</TableCell>
-        <TableCell>{prod.quantity}</TableCell>
-        <TableCell>{prod.totalPrice}$</TableCell>
-      </TableRow>
+      <CheckoutTableRow
+        key={prod.sku}
+        id={prod.id}
+        name={prod.name}
+        price={prod.price}
+        quantity={prod.quantity}
+        totalPrice={prod.totalPrice}
+        variant={prod.variant}
+        image={prod.image}
+        onClick={() => cartContext.removeProduct(prod.id)}
+      />
     );
   });
 
   return (
     <Layout>
-      <TableContainer className={styles.table} component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell></TableCell>
-              <TableCell></TableCell>
-              <TableCell>PRODUCT</TableCell>
-              <TableCell>PRICE</TableCell>
-              <TableCell>QUANTITY</TableCell>
-              <TableCell>TOTAL</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>{products}</TableBody>
-        </Table>
-      </TableContainer>
+      <CheckoutTable
+        headings={[
+          { title: '', span: 2 },
+          { title: 'PRODUCT', span: 1 },
+          { title: 'PRICE', span: 1 },
+          { title: 'QUANTITY', span: 1 },
+          { title: 'TOTAL', span: 1 },
+        ]}
+      >
+        {products}
+      </CheckoutTable>
+      <Snackbar
+        open={submitting.open}
+        autoHideDuration={3000}
+        message={submitting.message}
+        onClose={() => setSubmiting({message: '', open: false})}
+      />
       <Button
         variant="contained"
         color="primary"
