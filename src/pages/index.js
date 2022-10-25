@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     filter: 'brightness(40%)',
-  },
+  }, 
   heroContent: {
     position: 'relative',
     width: '100vw',

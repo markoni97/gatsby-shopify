@@ -77,7 +77,7 @@ const Cart = () => {
         open={submitting.open}
         autoHideDuration={3000}
         message={submitting.message}
-        onClose={() => setSubmiting({message: '', open: false})}
+        onClose={() => setSubmiting({ message: '', open: false })}
       />
       <Button
         variant="contained"
